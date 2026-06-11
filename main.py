@@ -13,6 +13,7 @@ app.add_middleware(
 )
 
 tasks: list[TaskSchema] = []
+books = []
 
 class TaskSchema(BaseModel):
     id: str
@@ -22,14 +23,21 @@ class TaskSchema(BaseModel):
 class TaskCreateSchema(BaseModel):
     title: str
 
-@app.get('/tasks')
-def read_tasks() -> list[TaskSchema]:
-    return tasks
+class BookSchema(BaseModel):
+    book: str
 
+@app.get('/tasks')
+def read_tasks():
+    return {"message": f"Любимая книга: {books}"}
 
 @app.post('/tasks')
 def create_task(payload: TaskCreateSchema) -> TaskSchema:
     new_task = TaskSchema(id=str(uuid4), title=payload.title, completed=False)
-
     tasks.append(new_task)
     return new_task
+
+@app.post('/book')
+def add_book(payload: BookSchema) -> None:
+    new_book = BookSchema(book=payload.book)
+    books.append(new_book)
+    return new_book
